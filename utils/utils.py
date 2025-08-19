@@ -1,25 +1,45 @@
-# io_utils.py
 from pathlib import Path
 import json
-import polars as pl
+import pandas as pd
+from typing import List, Dict
 
 def read_json_records(dir_path: str) -> list[dict]:
-    records = []
+    """
+    Read all *.json files in a directory. Supports JSON arrays and JSONL.
+    Returns a list of Python dicts.
+    """
+    records: list[dict] = []
     for p in Path(dir_path).glob("*.json"):
-        with open(p, "r") as f:
+        with open(p, "r", encoding="utf-8") as f:
             txt = f.read().strip()
-            # support either JSON array or JSONL files
-            if txt.startswith("["):
-                records.extend(json.loads(txt))
+            if not txt:
+                continue
+            if txt.lstrip().startswith("["):
+                try:
+                    data = json.loads(txt)
+                    if isinstance(data, list):
+                        records.extend(data)
+                except Exception:
+                    # fallback: try to parse as JSONL line-by-line
+                    for line in txt.splitlines():
+                        line = line.strip()
+                        if line:
+                            records.append(json.loads(line))
             else:
                 for line in txt.splitlines():
-                    if line.strip():
+                    line = line.strip()
+                    if line:
                         records.append(json.loads(line))
     return records
 
-def read_csv(dir_path: str) -> pl.DataFrame:
-    # Read all CSVs and vstack
-    frames = []
+def read_csv_concat(dir_path: str) -> pd.DataFrame:
+    """
+    Read and vertically concatenate all *.csv files in a directory.
+    Returns empty DataFrame if no files.
+    """
+    frames: List[pd.DataFrame] = []
     for p in Path(dir_path).glob("*.csv"):
-        frames.append(pl.read_csv(p))
-    return pl.concat(frames) if frames else pl.DataFrame()
+        frames.append(pd.read_csv(p))
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)

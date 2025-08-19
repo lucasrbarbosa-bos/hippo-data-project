@@ -1,0 +1,9 @@
+# Core
+pandas>=2.2.0,<3.0.0
+
+# Optional: for speedups with pandas (not strictly required, but nice to have)
+numpy>=1.26.0,<2.0.0
+pyarrow>=15.0.0,<17.0.0
+
+# For JSON validation/parsing robustness (optional, drop if you want barebones)
+python-dateutil>=2.8.2
