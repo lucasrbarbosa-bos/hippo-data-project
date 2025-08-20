@@ -9,8 +9,8 @@ A lightweight data pipeline for analyzing pharmacy claims and reverts.
 ### Clone the repository
 
 ```bash
-git clone https://github.com/lucasrbarbosa-bos/hippo-claim-revert-data-project.git
-cd hippo-claim-revert-data-project
+git clone https://github.com/lucasrbarbosa-bos/hippo-data-project.git
+cd hippo-data-project
 ```
 
 ## Create a virtual environment & install requirements
